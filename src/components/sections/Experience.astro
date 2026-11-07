@@ -4,7 +4,7 @@ import Section from '@/components/ui/Section.astro';
 import { experience } from '@/data/portfolio';
 ---
 
-<Section id="experience" index="04" command="git log --graph --career" title="Experience" kicker="Every season left a ring in the trunk.">
+<Section id="experience" index="01" command="git log --graph --career" title="Experience" kicker="Every season left a ring in the trunk.">
   <ol class="timeline">
     {experience.map((entry, index) => <TimelineEntry entry={entry} index={index} isHead={index === 0} />)}
   </ol>

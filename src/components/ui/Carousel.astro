@@ -1,0 +1,227 @@
+---
+/**
+ * Infinite horizontal carousel: a scroll-snapping track you can swipe,
+ * drag with the mouse, scroll or move with [<] [>]. Slot the items as <li>s.
+ */
+interface Props {
+  /** Accessible name of the carousel. */
+  label: string;
+  class?: string;
+}
+
+const { label, class: className } = Astro.props;
+---
+
+<div class:list={['carousel', className]} data-carousel role="region" aria-roledescription="carousel" aria-label={label}>
+  <div class="carousel__controls">
+    <span class="carousel__counter" data-carousel-counter aria-live="polite"></span>
+    <button type="button" class="carousel__button" data-carousel-prev aria-label="Previous">[&lt;]</button>
+    <button type="button" class="carousel__button" data-carousel-next aria-label="Next">[&gt;]</button>
+  </div>
+  <ul class="carousel__track" data-carousel-track role="list" tabindex="0">
+    <slot />
+  </ul>
+</div>
+
+<script>
+  const DRAG_THRESHOLD_PX = 6;
+  const pad = (value: number) => String(value).padStart(2, '0');
+
+  /** Copies of the items placed before and after the originals, hidden from assistive tech. */
+  function cloneSet(items: HTMLElement[]): DocumentFragment {
+    const fragment = document.createDocumentFragment();
+    for (const item of items) {
+      const clone = item.cloneNode(true) as HTMLElement;
+      clone.setAttribute('aria-hidden', 'true');
+      clone.inert = true;
+      clone.dataset.carouselClone = '';
+      // Clones are never observed by the scroll reveal, so show them straight away.
+      clone.querySelectorAll('[data-reveal]').forEach((element) => element.classList.add('is-visible'));
+      fragment.append(clone);
+    }
+    return fragment;
+  }
+
+  function initCarousel(root: HTMLElement): void {
+    const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+    const counter = root.querySelector<HTMLElement>('[data-carousel-counter]');
+    if (!track || !prev || !next || !counter) return;
+
+    const originals = [...track.children] as HTMLElement[];
+    const count = originals.length;
+    if (count === 0) return;
+
+    // [clones][originals][clones]: the originals always sit in the middle.
+    track.prepend(cloneSet(originals));
+    track.append(cloneSet(originals));
+
+    const step = () => {
+      const [first, second] = originals;
+      return second && first ? second.offsetLeft - first.offsetLeft : (first?.offsetWidth ?? track.clientWidth);
+    };
+    const setWidth = () => step() * count;
+    // The track is the items' offsetParent (position: relative), so this is the scroll position of the originals.
+    const originStart = () => originals[0]?.offsetLeft ?? 0;
+
+    /** Jumps by a whole set, without animation, so the loop never reaches an edge. */
+    const jump = (delta: number) => {
+      track.style.scrollBehavior = 'auto';
+      track.scrollLeft += delta;
+      track.style.scrollBehavior = '';
+    };
+
+    const recenter = () => {
+      const start = originStart();
+      if (track.scrollLeft < start - step() / 2) jump(setWidth());
+      else if (track.scrollLeft >= start + setWidth() - step() / 2) jump(-setWidth());
+    };
+
+    const update = () => {
+      const index = Math.round((track.scrollLeft - originStart()) / step());
+      counter.textContent = `${pad((((index % count) + count) % count) + 1)} / ${pad(count)}`;
+    };
+
+    let settleTimer = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        update();
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(recenter, 140);
+      },
+      { passive: true },
+    );
+
+    prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+    next.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+
+    // Mouse dragging (touch already scrolls natively). Native link/image dragging would hijack it.
+    track.addEventListener('dragstart', (event) => event.preventDefault());
+    let startX = 0;
+    let startScroll = 0;
+    let dragging = false;
+    let moved = false;
+
+    track.addEventListener('pointerdown', (event) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      dragging = true;
+      moved = false;
+      startX = event.clientX;
+      startScroll = track.scrollLeft;
+    });
+
+    window.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const delta = event.clientX - startX;
+      if (!moved && Math.abs(delta) < DRAG_THRESHOLD_PX) return;
+      if (!moved) {
+        moved = true;
+        track.classList.add('is-dragging');
+      }
+      track.scrollLeft = startScroll - delta;
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (!dragging) return;
+      dragging = false;
+      if (!moved) return;
+      track.classList.remove('is-dragging');
+      // A drag is not a click: don't open links or break text where it ends.
+      window.addEventListener(
+        'click',
+        (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        },
+        { capture: true, once: true },
+      );
+      recenter();
+    });
+
+    window.addEventListener('resize', () => {
+      jump(originStart() - track.scrollLeft);
+      update();
+    });
+
+    jump(originStart());
+    update();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach(initCarousel);
+</script>
+
+<style>
+  .carousel {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .carousel__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .carousel__counter {
+    margin-right: auto;
+    color: var(--color-ink-muted);
+    letter-spacing: 0.08em;
+  }
+
+  .carousel__button {
+    padding: var(--space-1) var(--space-2);
+    border: 1px dashed var(--color-border);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-lavender);
+    transition:
+      border-color var(--duration-fast),
+      color var(--duration-fast);
+  }
+
+  .carousel__button:hover {
+    border-color: var(--color-sage);
+    color: var(--color-sage);
+  }
+
+  .carousel__track {
+    position: relative;
+    display: flex;
+    gap: var(--space-6);
+    margin: 0;
+    padding: var(--space-2) var(--space-1) var(--space-6);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    cursor: grab;
+  }
+
+  .carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* While dragging: follow the pointer freely, snap again on release */
+  .carousel__track.is-dragging {
+    scroll-snap-type: none;
+    scroll-behavior: auto;
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  .carousel__track > :global(*) {
+    display: flex;
+    flex: 0 0 min(85%, 20rem);
+    scroll-snap-align: start;
+  }
+
+  .carousel__track > :global(*) > :global(*) {
+    flex: 1;
+  }
+</style>

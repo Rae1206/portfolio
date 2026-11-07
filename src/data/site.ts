@@ -1,6 +1,6 @@
 /**
- * Site-wide content. Placeholder values: replace with real data later.
- * Components read from here, so content changes never touch markup.
+ * Site-wide content. Components read from here, so content changes never
+ * touch markup. Sources: Alex's CV and his public GitHub profile.
  */
 
 export interface NavItem {
@@ -24,14 +24,14 @@ export const profile = {
   firstName: 'Alex',
   lastName: 'Alvarado',
   role: 'Software Engineer',
-  roleAccent: 'Developer',
+  roleAccent: 'Full-Stack Developer',
   handle: 'alex@portfolio',
   location: 'Guayaquil, EC',
   timeZone: 'America/Guayaquil',
   greeting: 'Hello, World!',
   tagline: [
-    'I build digital experiences, craft innovative solutions,',
-    'and turn ideas into reality.',
+    'Full-stack developer crafting reliable software with .NET, Angular and SQL,',
+    'from stock-exchange systems to e-commerce that sells every day.',
   ],
   motto: ['Code', 'Create', 'Innovate', 'Repeat'],
   terminalQuote: ['Dream big. Code better.', 'Keep pushing forward.'],
@@ -39,21 +39,21 @@ export const profile = {
 
 export const navItems: NavItem[] = [
   { id: 'home', label: 'Home' },
+  { id: 'experience', label: 'Experience' },
   { id: 'about', label: 'About' },
   { id: 'projects', label: 'Projects' },
   { id: 'skills', label: 'Skills' },
-  { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Contact' },
 ];
 
 export const stats: Stat[] = [
-  { icon: 'code', value: '5+', label: 'Projects' },
-  { icon: 'github', value: '1.2k+', label: 'Commits' },
-  { icon: 'coffee', value: '10k+', label: 'Hours Coding' },
+  { icon: 'code', value: '8', label: 'Featured projects' },
+  { icon: 'github', value: '17', label: 'Public repos' },
+  { icon: 'coffee', value: '2020', label: 'Coding since' },
 ];
 
 export const socials: SocialLink[] = [
-  { label: 'GitHub', href: 'https://github.com/', handle: '@your-handle' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/', handle: 'in/your-handle' },
-  { label: 'Email', href: 'mailto:hello@example.com', handle: 'hello@example.com' },
+  { label: 'GitHub', href: 'https://github.com/Rae1206', handle: '@Rae1206' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/alex-alvarado-716bb8322/', handle: 'in/alex-alvarado' },
+  { label: 'Email', href: 'mailto:alex.alvarado.rae@gmail.com', handle: 'alex.alvarado.rae@gmail.com' },
 ];

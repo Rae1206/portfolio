@@ -41,8 +41,8 @@ export default function Typewriter({ lines, speed = 32, startDelay = 600, classN
   const done = count >= fullText.length;
 
   return (
-    // React re-renders this text while typing: excluded from the page-breaking effect.
-    <p className={className} data-unbreakable>
+    // React re-renders this text while typing, so it can only be broken once typing is done.
+    <p className={className} data-unbreakable={done ? undefined : ''}>
       <span className="sr-only">{fullText}</span>
       <span aria-hidden="true" style={{ whiteSpace: 'pre-line' }}>
         {visible}

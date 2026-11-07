@@ -1,12 +1,13 @@
 ---
 import ProjectCard from '@/components/cards/ProjectCard.astro';
+import Carousel from '@/components/ui/Carousel.astro';
 import Section from '@/components/ui/Section.astro';
 import { asciiArtNames } from '@/data/ascii-art';
 import { projects } from '@/data/portfolio';
 ---
 
-<Section id="projects" index="02" command="ls -la ./projects" title="Selected work" kicker="Things I planted and watched grow.">
-  <ul class="projects" role="list">
+<Section id="projects" index="03" command="ls -la ./projects" title="Selected work" kicker="Things I planted and watched grow.">
+  <Carousel label="Projects">
     {
       projects.map((project, index) => (
         <li>
@@ -14,21 +15,5 @@ import { projects } from '@/data/portfolio';
         </li>
       ))
     }
-  </ul>
+  </Carousel>
 </Section>
-
-<style>
-  .projects {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-    gap: var(--space-8);
-  }
-
-  .projects > li {
-    display: flex;
-  }
-
-  .projects > li > :global(*) {
-    flex: 1;
-  }
-</style>

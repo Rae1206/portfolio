@@ -16,6 +16,7 @@ export const WEIGHTS = {
   grass: 0.4,
   ground: 1,
   cat: 1.5,
+  icon: 1.2,
   moonShard: 1.4,
   moonCore: 6,
 } as const;

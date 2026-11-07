@@ -38,8 +38,21 @@ const statusLabel = { live: 'live', wip: 'in progress', archived: 'archived' }[p
       <span class="text-purple">[{number}]</span>
       <span aria-hidden="true">──</span>
       <span>{project.year}</span>
+      <span aria-hidden="true">·</span>
+      <span class="project__context">{project.context}</span>
     </p>
-    <h3 class="project__title">{project.title}</h3>
+    <h3 class="project__title">
+      {
+        project.href ? (
+          // Stretched link: the whole card opens the live site.
+          <a href={project.href} class="project__title-link" target="_blank" rel="noopener noreferrer">
+            {project.title}
+          </a>
+        ) : (
+          project.title
+        )
+      }
+    </h3>
     <p class="project__summary">{project.summary}</p>
     <ul class="project__tags" aria-label="Tech stack">
       {project.stack.map((tech) => <li><Tag>{tech}</Tag></li>)}
@@ -47,14 +60,14 @@ const statusLabel = { live: 'live', wip: 'in progress', archived: 'archived' }[p
     <p class="project__links">
       {
         project.href && (
-          <a href={project.href} class="project__link">
-            <Icon name="arrow" size={14} /> live demo
+          <a href={project.href} class="project__link" target="_blank" rel="noopener noreferrer">
+            <Icon name="arrow" size={14} /> live site
           </a>
         )
       }
       {
         project.repo && (
-          <a href={project.repo} class="project__link">
+          <a href={project.repo} class="project__link" target="_blank" rel="noopener noreferrer">
             <Icon name="github" size={14} /> source
           </a>
         )
@@ -119,15 +132,31 @@ const statusLabel = { live: 'live', wip: 'in progress', archived: 'archived' }[p
 
   .project__meta {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-2);
     font-size: var(--text-xs);
     color: var(--color-ink-muted);
+  }
+
+  .project__context {
+    color: var(--color-sage);
   }
 
   .project__title {
     font-family: var(--font-display);
     font-size: var(--text-lg);
     color: var(--color-ink);
+  }
+
+  .project__title-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .project:has(.project__title-link):hover .project__title-link {
+    color: var(--color-sage);
   }
 
   .project__summary {
@@ -141,7 +170,10 @@ const statusLabel = { live: 'live', wip: 'in progress', archived: 'archived' }[p
     gap: var(--space-2);
   }
 
+  /* Above the stretched title link, so "source" stays its own target */
   .project__links {
+    position: relative;
+    z-index: 2;
     display: flex;
     gap: var(--space-6);
     margin-top: auto;

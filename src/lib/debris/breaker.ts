@@ -1,5 +1,6 @@
 import { recordDamage, resetDamage } from './damage-meter';
 import { debrisLayer } from './debris-layer';
+import { breakIcon, repairIcons } from './dom-icons';
 import { breakTextAt, repairText } from './dom-text';
 import type { BreakableSurface, DebrisPiece } from './types';
 
@@ -27,6 +28,7 @@ export function initBreaker(): void {
 /** Restores everything that was broken and re-enables damage. */
 export function repairAll(): void {
   repairText();
+  repairIcons();
   surfaces.forEach((surface) => surface.repair());
   debrisLayer.clear();
   resetDamage();
@@ -57,6 +59,7 @@ function onClick(event: MouseEvent): void {
 
   const { clientX: x, clientY: y } = event;
   let pieces: DebrisPiece[] = breakTextAt(x, y, isExcluded);
+  if (pieces.length === 0 && target) pieces = breakIcon(target, isExcluded);
 
   if (pieces.length === 0) {
     for (const surface of surfacesAt(x, y)) {
