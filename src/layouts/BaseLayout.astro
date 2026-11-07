@@ -38,8 +38,7 @@ const { title, description } = Astro.props;
         try {
           stored = localStorage.getItem('motion');
         } catch {}
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        root.dataset.motion = stored === 'on' || stored === 'off' ? stored : reduce ? 'off' : 'on';
+        root.dataset.motion = stored === 'off' ? 'off' : 'on';
       })();
     </script>
   </head>

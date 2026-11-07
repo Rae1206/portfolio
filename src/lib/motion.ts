@@ -1,6 +1,6 @@
 /**
- * Site-wide motion preference. Defaults to the OS `prefers-reduced-motion`
- * setting and can be overridden by the visitor (stored in localStorage).
+ * Site-wide motion preference. Defaults to 'on' and can be overridden
+ * by the visitor (stored in localStorage).
  * The resolved value lives on <html data-motion="on|off"> so CSS and JS agree.
  */
 
