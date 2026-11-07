@@ -16,6 +16,8 @@ export interface GridMetrics {
   rows: number;
   /** cellWidth / cellHeight. Converts columns to row units for round shapes. */
   aspect: number;
+  /** Rows at the top covered by page content (see data-reserve-top); scenes may keep key art below it. */
+  reservedTop: number;
 }
 
 export interface SceneStartOptions {
@@ -53,5 +55,7 @@ export interface AsciiScene {
   breakAt?(col: number, row: number, grid: AsciiGrid): BrokenCell[];
   /** Undoes all damage done through `breakAt`. */
   repair?(): void;
+  /** A burst of wind from a cell (touch: press and hold on the background). */
+  gust?(col: number, row: number): void;
   dispose?(): void;
 }

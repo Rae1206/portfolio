@@ -75,7 +75,7 @@ export class MoonScene implements AsciiScene {
   private readonly moon: Mesh<SphereGeometry, MeshStandardMaterial>;
   private target: WebGLRenderTarget | null = null;
   private pixels = new Uint8Array(0);
-  private metrics: GridMetrics = { cols: 0, rows: 0, aspect: 0.5 };
+  private metrics: GridMetrics = { cols: 0, rows: 0, aspect: 0.5, reservedTop: 0 };
   private tiltX = 0;
   private tiltY = 0;
   private reveal = 0;

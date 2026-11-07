@@ -19,6 +19,11 @@ export interface RendererOptions {
 export const DEFAULT_ANIMATION_SPEED = 0.5;
 
 const ALPHA_LEVELS = 6;
+/** Touch: how long a still finger must press to raise a gust, and how far it may drift. */
+const HOLD_FOR_GUST_MS = 450;
+const HOLD_SLOP_PX = 12;
+/** Touch: how long the finger's influence lingers after it lifts. */
+const TOUCH_RELEASE_MS = 500;
 const DEFAULT_FONT_FAMILY = '"IBM Plex Mono", ui-monospace, monospace';
 
 /**
@@ -56,7 +61,8 @@ export class AsciiRenderer {
       fontSize: options.fontSize ?? 12,
       lineHeight: options.lineHeight ?? 1.2,
       fontFamily: options.fontFamily ?? DEFAULT_FONT_FAMILY,
-      fps: options.fps ?? 30,
+      // Phones and tablets get a lighter frame budget.
+      fps: options.fps ?? (window.matchMedia('(pointer: coarse)').matches ? 24 : 30),
       speed: options.speed ?? DEFAULT_ANIMATION_SPEED,
     };
   }
@@ -135,7 +141,21 @@ export class AsciiRenderer {
     const observer = new ResizeObserver(() => this.resize());
     observer.observe(this.canvas);
     this.cleanups.push(() => observer.disconnect());
+
+    // An ancestor may announce how much of the canvas top is covered by content.
+    const host = this.canvas.closest<HTMLElement>('[data-reserve-top]');
+    if (host) {
+      const watcher = new MutationObserver(() => this.resize());
+      watcher.observe(host, { attributes: true, attributeFilter: ['data-reserve-top'] });
+      this.cleanups.push(() => watcher.disconnect());
+    }
     this.resize();
+  }
+
+  /** Rows hidden under page content, from the nearest data-reserve-top (in CSS px). */
+  private reservedTopRows(): number {
+    const px = Number(this.canvas.closest<HTMLElement>('[data-reserve-top]')?.dataset.reserveTop ?? 0);
+    return Number.isFinite(px) && px > 0 ? Math.ceil(px / this.cellHeight) : 0;
   }
 
   private observeVisibility(): void {
@@ -163,15 +183,11 @@ export class AsciiRenderer {
   }
 
   private listenToPointer(): void {
-    const onMove = (event: PointerEvent) => {
+    const track = (clientX: number, clientY: number) => {
       const rect = this.canvas.getBoundingClientRect();
-      const col = (event.clientX - rect.left) / this.cellWidth;
-      const row = (event.clientY - rect.top) / this.cellHeight;
-      const inside =
-        event.clientX >= rect.left &&
-        event.clientX <= rect.right &&
-        event.clientY >= rect.top &&
-        event.clientY <= rect.bottom;
+      const col = (clientX - rect.left) / this.cellWidth;
+      const row = (clientY - rect.top) / this.cellHeight;
+      const inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
 
       if (inside && this.pointer.active) {
         this.pointer.movement += Math.hypot(col - this.pointer.col, (row - this.pointer.row) * 2);
@@ -179,16 +195,63 @@ export class AsciiRenderer {
       this.pointer.col = col;
       this.pointer.row = row;
       this.pointer.active = inside;
+      return inside;
+    };
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') track(event.clientX, event.clientY);
     };
     const onLeave = () => {
       this.pointer.active = false;
     };
 
+    // Touch: the finger is a brush. touchmove keeps firing while the page
+    // scrolls (pointer events get cancelled), and listeners stay passive so
+    // scrolling is never blocked.
+    let releaseTimer = 0;
+    let holdTimer = 0;
+    let holdStart = { x: 0, y: 0 };
+    const cancelHold = () => window.clearTimeout(holdTimer);
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      window.clearTimeout(releaseTimer);
+      if (!track(touch.clientX, touch.clientY)) return;
+      // Press and hold on the background: a gust of wind from that spot.
+      holdStart = { x: touch.clientX, y: touch.clientY };
+      cancelHold();
+      holdTimer = window.setTimeout(() => {
+        this.scene.gust?.(this.pointer.col, this.pointer.row);
+        if (this.frameId === 0) this.renderFrame();
+      }, HOLD_FOR_GUST_MS);
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      track(touch.clientX, touch.clientY);
+      if (Math.hypot(touch.clientX - holdStart.x, touch.clientY - holdStart.y) > HOLD_SLOP_PX) cancelHold();
+    };
+    const onTouchEnd = () => {
+      cancelHold();
+      // Let the plants settle back instead of snapping.
+      releaseTimer = window.setTimeout(onLeave, TOUCH_RELEASE_MS);
+    };
+
     window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
     document.documentElement.addEventListener('pointerleave', onLeave);
     window.addEventListener('blur', onLeave);
     this.cleanups.push(() => {
+      cancelHold();
+      window.clearTimeout(releaseTimer);
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('touchcancel', onTouchEnd);
       document.documentElement.removeEventListener('pointerleave', onLeave);
       window.removeEventListener('blur', onLeave);
     });
@@ -206,7 +269,7 @@ export class AsciiRenderer {
     const cols = Math.ceil(width / this.cellWidth);
     const rows = Math.ceil(height / this.cellHeight);
     this.grid.resize(cols, rows);
-    this.scene.resize({ cols, rows, aspect: this.cellWidth / this.cellHeight });
+    this.scene.resize({ cols, rows, aspect: this.cellWidth / this.cellHeight, reservedTop: this.reservedTopRows() });
     this.renderFrame();
   }
 

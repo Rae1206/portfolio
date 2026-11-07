@@ -22,7 +22,8 @@ import { navItems, profile } from '@/data/site';
                 <span class="sidebar__marker-idle"><Icon name="sparkle" size={10} /></span>
                 <span class="sidebar__marker-active">&gt;</span>
               </span>
-              {item.label}
+              <span class="sidebar__icon" aria-hidden="true"><Icon name={item.icon} size={18} /></span>
+              <span class="sidebar__label">{item.label}</span>
             </a>
           </li>
         ))
@@ -98,6 +99,10 @@ import { navItems, profile } from '@/data/site';
     background: rgb(160 102 221 / 0.08);
   }
 
+  .sidebar__icon {
+    display: none;
+  }
+
   .sidebar__marker {
     display: inline-grid;
     width: 0.8rem;
@@ -164,17 +169,35 @@ import { navItems, profile } from '@/data/site';
     }
 
     .sidebar__nav {
-      overflow-x: auto;
+      flex: 1;
     }
 
+    /* Icons only: the labels stay for screen readers */
     .sidebar__nav ul {
       display: flex;
-      gap: var(--space-2);
+      justify-content: space-between;
     }
 
     .sidebar__link {
+      justify-content: center;
+      padding: var(--space-2);
+    }
+
+    .sidebar__marker {
+      display: none;
+    }
+
+    .sidebar__icon {
+      display: inline-flex;
+    }
+
+    .sidebar__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
       white-space: nowrap;
-      font-size: var(--text-xs);
     }
   }
 </style>

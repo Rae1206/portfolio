@@ -10,16 +10,17 @@ interface Props {
   class?: string;
 }
 
-const { size = 'clamp(7rem, 13vw, 12rem)', class: className } = Astro.props;
+const { size, class: className } = Astro.props;
 ---
 
-<div class:list={['moon', className]} style={`--moon-size: ${size}`} aria-hidden="true">
+<!-- Without a size prop the parent can set --moon-size from CSS (e.g. per breakpoint). -->
+<div class:list={['moon', className]} style={size ? `--moon-size: ${size}` : undefined} aria-hidden="true">
   <AsciiMoon client:visible fontSize={7} className="moon__canvas" />
 </div>
 
 <style>
   .moon {
-    width: var(--moon-size);
+    width: var(--moon-size, clamp(7rem, 13vw, 12rem));
     aspect-ratio: 1;
   }
 

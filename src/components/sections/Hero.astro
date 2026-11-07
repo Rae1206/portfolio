@@ -9,7 +9,7 @@ import { profile, stats } from '@/data/site';
 ---
 
 <section id="home" class="hero" aria-labelledby="hero-title" data-section>
-  <div class="hero__layer hero__layer--garden" aria-hidden="true">
+  <div class="hero__layer hero__layer--garden" aria-hidden="true" data-reserve-top="0">
     <AsciiGarden client:load preset="hero" fontSize={12} className="hero__canvas" />
   </div>
   <Moon class="hero__moon" />
@@ -54,6 +54,24 @@ import { profile, stats } from '@/data/site';
     </RetroWindow>
   </div>
 </section>
+
+<script>
+  // Tell the garden how much of it the hero text covers, so on phones the
+  // big flower grows below the text instead of behind it.
+  const hero = document.querySelector<HTMLElement>('#home');
+  const content = hero?.querySelector<HTMLElement>('.hero__content');
+  const garden = hero?.querySelector<HTMLElement>('[data-reserve-top]');
+
+  if (hero && content && garden) {
+    const publish = () => {
+      const covered = content.getBoundingClientRect().bottom - garden.getBoundingClientRect().top;
+      const value = String(Math.max(0, Math.round(covered)));
+      if (garden.dataset.reserveTop !== value) garden.dataset.reserveTop = value;
+    };
+    new ResizeObserver(publish).observe(content);
+    publish();
+  }
+</script>
 
 <style>
   .hero {
@@ -159,9 +177,64 @@ import { profile, stats } from '@/data/site';
     color: var(--color-sage);
   }
 
-  @media (max-width: 760px) {
-    .hero__layer--garden {
-      opacity: 0.45;
+  /*
+   * Small screens: compact text at the top, icon-only buttons and a compact
+   * stats row, so most of the screen is the garden you can touch.
+   */
+  @media (max-width: 720px) {
+    .hero {
+      align-content: start;
+      padding-top: var(--space-8);
+    }
+
+    .hero :global(.hero__moon) {
+      --moon-size: 4.75rem;
+      top: var(--space-3);
+      right: var(--space-3);
+    }
+
+    .hero__content {
+      gap: var(--space-3);
+      max-width: 22rem;
+    }
+
+    .hero__greeting {
+      font-size: var(--text-xs);
+    }
+
+    .hero__name {
+      font-size: clamp(2rem, 9vw, 2.5rem);
+    }
+
+    .hero__role {
+      font-size: var(--text-sm);
+    }
+
+    .hero :global(.hero__tagline) {
+      min-height: 0;
+      font-size: var(--text-xs);
+      line-height: 1.6;
+    }
+
+    .hero__actions {
+      gap: var(--space-3);
+    }
+
+    .hero__actions :global(.button) {
+      padding: var(--space-3);
+    }
+
+    .hero__actions :global(.button__label) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .hero__quote {
+      display: none;
     }
   }
 </style>

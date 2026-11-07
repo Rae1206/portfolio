@@ -3,9 +3,13 @@
  * touch markup. Sources: Alex's CV and his public GitHub profile.
  */
 
+import type { IconName } from '@/components/ui/icons';
+
 export interface NavItem {
   id: string;
   label: string;
+  /** Shown instead of the label on small screens. */
+  icon: IconName;
 }
 
 export interface Stat {
@@ -38,18 +42,18 @@ export const profile = {
 } as const;
 
 export const navItems: NavItem[] = [
-  { id: 'home', label: 'Home' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'about', label: 'About' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'home', label: 'Home', icon: 'home' },
+  { id: 'experience', label: 'Experience', icon: 'briefcase' },
+  { id: 'about', label: 'About', icon: 'user' },
+  { id: 'projects', label: 'Projects', icon: 'folder' },
+  { id: 'skills', label: 'Skills', icon: 'layers' },
+  { id: 'contact', label: 'Contact', icon: 'mail' },
 ];
 
 export const stats: Stat[] = [
   { icon: 'code', value: '8', label: 'Featured projects' },
   { icon: 'github', value: '17', label: 'Public repos' },
-  { icon: 'coffee', value: '2020', label: 'Coding since' },
+  { icon: 'coffee', value: '2018', label: 'Coding since' },
 ];
 
 export const socials: SocialLink[] = [

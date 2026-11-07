@@ -62,6 +62,21 @@ interface Particle { col: number; row: number; vCol: number; vRow: number; life:
 interface Butterfly { col: number; row: number; vCol: number; vRow: number; targetCol: number; targetRow: number; retarget: number; phase: number; damage: Damage }
 interface Firefly { col: number; row: number; phase: number; damage: Damage }
 
+/** Below this many columns the garden is laid out for a phone. */
+const PHONE_COLS = 72;
+/** Phone layout of the feature flower: stem height (fraction of the ground row) and bloom radius (of the stem). */
+const PHONE_FEATURE_HEIGHT = 0.2;
+/** Phones pack the meadow a little tighter than MIN_FLOWER_SPACING. */
+const PHONE_FLOWER_SPACING = 6;
+const PHONE_FEATURE_RADIUS = 0.7;
+/** Lily height including its bloom, in stem heights: bloom reaches ~1.8 radii up, +15% when it breathes or is touched. */
+const PHONE_FEATURE_REACH = 1 + PHONE_FEATURE_RADIUS * 1.8 * 1.15;
+
+/** Touch gust: extra wind, how fast it calms down (per second) and the petals it throws. */
+const GUST_STRENGTH = 1.6;
+const GUST_DECAY = 1.2;
+const GUST_PETALS = 14;
+
 /** Cells broken by one click: a small plus shape around the clicked cell. */
 const BREAK_RADIUS = { cols: 1.6, rows: 1.1 };
 
@@ -73,7 +88,7 @@ const MIN_FLOWER_SPACING = 7;
  * cursor and shed petals. Everything is rebuilt from a seed on resize.
  */
 export class GardenScene implements AsciiScene {
-  private metrics: GridMetrics = { cols: 0, rows: 0, aspect: 0.5 };
+  private metrics: GridMetrics = { cols: 0, rows: 0, aspect: 0.5, reservedTop: 0 };
   private groundRow = 0;
   private clock = 0;
   private started = false;
@@ -89,6 +104,8 @@ export class GardenScene implements AsciiScene {
   private petals: Particle[] = [];
   private sparkles: Particle[] = [];
   private petalTimer = 0;
+  /** Extra wind from a touch gust; decays back to 0. */
+  private gustStrength = 0;
   private pointer: PointerState = { col: 0, row: 0, active: false, movement: 0 };
   private catAwake = 0;
   private ink: InkLayer | null = null;
@@ -117,6 +134,7 @@ export class GardenScene implements AsciiScene {
   update(dt: number, time: number, pointer: PointerState): void {
     this.pointer = pointer;
     if (this.started) this.clock += dt;
+    this.gustStrength *= Math.exp(-GUST_DECAY * dt);
 
     for (const plant of this.plants) plant.update(dt, this.clock, pointer, this.metrics.aspect);
     this.updateClouds(dt);
@@ -200,9 +218,32 @@ export class GardenScene implements AsciiScene {
     return this.feature ? [this.feature, ...this.meadow] : this.meadow;
   }
 
+  /** Touch press-and-hold: a fan of petals bursts from the spot and the wind picks up. */
+  gust(col: number, row: number): void {
+    this.gustStrength = GUST_STRENGTH;
+    for (let i = 0; i < GUST_PETALS; i++) {
+      const angle = range(this.rng, -Math.PI, 0);
+      const speed = range(this.rng, 3, 9);
+      this.petals.push({
+        col,
+        row,
+        vCol: Math.cos(angle) * speed * 2,
+        vRow: Math.sin(angle) * speed * 0.6,
+        life: 0,
+        maxLife: range(this.rng, 5, 10),
+        char: pick(this.rng, PETAL_CHARS),
+        color: this.rng() > 0.4 ? Color.purple : Color.lavender,
+        settled: false,
+      });
+    }
+  }
+
   private windAt(time: number, col: number): number {
     const gust = Math.pow(Math.max(0, Math.sin(time * 0.23)), 4) * 0.6;
-    return (Math.sin(time * 0.7 + col * 0.045) * 0.6 + Math.sin(time * 1.7 + col * 0.11) * 0.25 + gust) * this.options.wind;
+    return (
+      (Math.sin(time * 0.7 + col * 0.045) * 0.6 + Math.sin(time * 1.7 + col * 0.11) * 0.25 + gust) * this.options.wind +
+      this.gustStrength
+    );
   }
 
   // ---------------------------------------------------------------- build
@@ -267,7 +308,9 @@ export class GardenScene implements AsciiScene {
     const feature = this.options.feature!;
     const { cols } = this.metrics;
     const narrow = cols < 110;
-    const height = Math.max(4, this.groundRow * feature.height * (narrow ? 0.8 : 1));
+    // Phones: the text sits on top, so the flower lives lower, centered and with a bigger bloom.
+    const phone = cols < PHONE_COLS;
+    const height = Math.max(4, phone ? this.phoneFeatureHeight() : this.groundRow * feature.height * (narrow ? 0.8 : 1));
     const baseLeaves: LeafSpec[] = Array.from({ length: narrow ? 4 : 7 }, (_, index) => ({
       at: range(rng, 0.01, 0.08),
       side: index % 2 === 0 ? 1 : -1,
@@ -286,13 +329,13 @@ export class GardenScene implements AsciiScene {
     }));
 
     return new VectorPlant({
-      col: cols * (narrow ? Math.min(feature.x, 0.72) : feature.x),
+      col: cols * (phone ? 0.5 : narrow ? Math.min(feature.x, 0.72) : feature.x),
       baseRow: this.groundRow,
       height,
       bend: -0.08,
       thick: true,
       bloom: feature.kind,
-      radius: height * feature.radius,
+      radius: height * (phone ? PHONE_FEATURE_RADIUS : feature.radius),
       leaves: [...baseLeaves, ...stemLeaves],
       delay: 0.2,
       duration: 4.5,
@@ -301,17 +344,35 @@ export class GardenScene implements AsciiScene {
     });
   }
 
+  /**
+   * Phone layout: the whole lily (stem plus bloom, which reaches about
+   * PHONE_FEATURE_REACH stems tall) must fit between the text above
+   * (metrics.reservedTop) and the ground, capped so tall screens stay balanced.
+   */
+  private phoneFeatureHeight(): number {
+    const free = this.groundRow - this.metrics.reservedTop - 1;
+    return Math.min(this.groundRow * PHONE_FEATURE_HEIGHT, free / PHONE_FEATURE_REACH);
+  }
+
   private createMeadow(rng: Rng): SpritePlant[] {
-    const { from, to, density, maxHeight, species = SPRITE_SPECIES } = this.options.meadow;
+    const { to, density, maxHeight, species = SPRITE_SPECIES } = this.options.meadow;
+    // Phones: the whole bottom of the screen is garden, so the meadow spans the full width.
+    const from = this.metrics.cols < PHONE_COLS ? Math.min(this.options.meadow.from, 0.04) : this.options.meadow.from;
     const { cols } = this.metrics;
     const span = (to - from) * cols;
     // Never closer than MIN_FLOWER_SPACING columns, so bloom sprites don't overlap.
-    const count = Math.min(Math.round((span * density) / 10), Math.floor(span / MIN_FLOWER_SPACING));
+    // Phones show the garden as a strip under the text: fill it as densely as the sprites allow.
+    const count =
+      this.metrics.cols < PHONE_COLS
+        ? Math.floor(span / PHONE_FLOWER_SPACING)
+        : Math.min(Math.round((span * density) / 10), Math.floor(span / MIN_FLOWER_SPACING));
 
     return Array.from({ length: count }, (_, index) => {
       const kind = pick(rng, species);
       // Leave room above the stem for the bloom sprite so it is never clipped.
-      const room = this.groundRow - spriteHeight(kind) - 1;
+      // On phones the text covers the top of the garden, so blooms must stay below it too.
+      const ceiling = this.metrics.cols < PHONE_COLS ? this.metrics.reservedTop + 1 : 0;
+      const room = this.groundRow - spriteHeight(kind) - 1 - ceiling;
       const height = Math.max(2, Math.min(range(rng, 3, maxHeight), room));
       return new SpritePlant({
         // Stratified: one slot per flower with jitter, so flowers spread evenly instead of clumping.

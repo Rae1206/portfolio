@@ -69,5 +69,7 @@ function onClick(event: MouseEvent): void {
   }
 
   debrisLayer.spawn(pieces, { x, y });
+  // A tiny buzz on phones that support it (Android); a no-op elsewhere.
+  if (pieces.length > 0 && window.matchMedia('(pointer: coarse)').matches) navigator.vibrate?.(12);
   recordDamage(pieces.length, pieces.some((piece) => piece.critical));
 }

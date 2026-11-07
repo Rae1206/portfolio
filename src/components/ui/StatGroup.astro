@@ -71,10 +71,33 @@ const { stats, class: className } = Astro.props;
     color: var(--color-lavender);
   }
 
-  @media (max-width: 480px) {
-    .stats__item + .stats__item {
-      border-left: 0;
-      border-top: 1px dashed var(--color-border);
+  /* Small screens: one compact row of icon + value; labels stay for screen readers */
+  @media (max-width: 720px) {
+    .stats {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stats__item {
+      padding: var(--space-3) var(--space-2);
+    }
+
+    .stats__label :global(.stats__icon) {
+      width: 20px;
+      height: 20px;
+      margin-bottom: 0;
+    }
+
+    .stats__label span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .stats__value {
+      font-size: var(--text-base);
     }
   }
 </style>

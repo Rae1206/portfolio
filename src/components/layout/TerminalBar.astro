@@ -13,8 +13,8 @@ import { profile } from '@/data/site';
   </a>
   <p class="topbar__meta">
     <Icon name="sparkle" size={14} class="topbar__spark" />
-    <span>{profile.location}</span>
-    <span class="topbar__sep" aria-hidden="true">|</span>
+    <span class="topbar__location">{profile.location}</span>
+    <span class="topbar__sep topbar__location" aria-hidden="true">|</span>
     <LiveClock client:idle timeZone={profile.timeZone} />
     <MotionToggle />
   </p>
@@ -75,6 +75,11 @@ import { profile } from '@/data/site';
   }
 
   @media (max-width: 520px) {
+    /* Small screens: icon, clock and motion toggle only */
+    .topbar__location {
+      display: none;
+    }
+
     .topbar {
       padding-inline: var(--space-4);
       font-size: var(--text-xs);

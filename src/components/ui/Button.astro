@@ -23,7 +23,7 @@ const { href, tone = 'sage', icon, prompt = false, external = false, class: clas
 >
   {prompt && <span class="button__prompt" aria-hidden="true">&gt;_</span>}
   {icon && <Icon name={icon} size={18} />}
-  <span><slot /></span>
+  <span class="button__label"><slot /></span>
 </a>
 
 <style>

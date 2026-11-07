@@ -235,10 +235,33 @@ const data = JSON.stringify({ art: mascot, blink: mascotBlink, talk: mascotTalk,
     to { opacity: 0; }
   }
 
+  /* Phones: a compact full-width bottom sheet, Capri smaller beside the dialog */
   @media (max-width: 720px) {
+    .mascot {
+      right: var(--space-2);
+      bottom: var(--space-2);
+      left: var(--space-2);
+      max-width: none;
+    }
+
     .mascot__panel {
-      flex-direction: column;
-      gap: var(--space-4);
+      gap: var(--space-2);
+      padding: var(--space-2);
+    }
+
+    .mascot__art {
+      font-size: 0.2rem;
+    }
+
+    .mascot__badge {
+      font-size: 0.55rem;
+    }
+
+    .mascot__bubble {
+      flex: 1;
+      min-width: 0;
+      max-width: none;
+      padding-left: var(--space-2);
     }
   }
 </style>

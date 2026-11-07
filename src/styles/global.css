@@ -8,6 +8,8 @@
 
 html {
   color-scheme: dark;
+  /* No double-tap zoom or tap delay: taps break things instantly on phones */
+  touch-action: manipulation;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--topbar-height) + var(--space-8));
   -webkit-text-size-adjust: 100%;
