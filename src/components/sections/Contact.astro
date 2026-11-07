@@ -1,0 +1,139 @@
+---
+import AsciiGarden from '@/components/islands/AsciiGarden';
+import Button from '@/components/ui/Button.astro';
+import Moon from '@/components/ui/Moon.astro';
+import RetroWindow from '@/components/ui/RetroWindow.astro';
+import Section from '@/components/ui/Section.astro';
+import { socials } from '@/data/site';
+
+const email = socials.find((social) => social.href.startsWith('mailto:'));
+---
+
+<Section id="contact" index="05" command="./connect.sh" title="Let's grow something" kicker="Plant an idea; I'll bring the water." class="contact">
+  <Moon class="contact__moon" size="clamp(6rem, 11vw, 10rem)" />
+
+  <div class="contact__garden" aria-hidden="true">
+    <AsciiGarden client:visible preset="contact" fontSize={12} className="contact__canvas" />
+  </div>
+
+  <div class="contact__content">
+    <div data-reveal>
+      <RetroWindow title="~/contact — zsh" tone="sage">
+        <p class="contact__cmd"><span class="text-sage">$</span> contact --list</p>
+        <ul class="contact__list">
+          {
+            socials.map((social) => (
+              <li>
+                <a
+                  href={social.href}
+                  class="contact__link"
+                  target={social.href.startsWith('http') ? '_blank' : undefined}
+                  rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                >
+                  <span class="contact__arrow" aria-hidden="true">→</span>
+                  <span class="contact__label">{social.label.toLowerCase()}</span>
+                  <span class="contact__handle">{social.handle}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="contact__cmd"><span class="text-sage">$</span> <span class="caret"></span></p>
+      </RetroWindow>
+    </div>
+
+    {
+      email && (
+        <div class="contact__cta" data-reveal style="--reveal-delay: 150ms">
+          <Button href={email.href} tone="purple" icon="send">
+            Say hello
+          </Button>
+        </div>
+      )
+    }
+  </div>
+</Section>
+
+<style>
+  .contact__garden {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: -1;
+    height: 26rem;
+  }
+
+  :global(.contact) {
+    isolation: isolate;
+    overflow: hidden;
+    padding-bottom: 22rem;
+  }
+
+  :global(.contact__moon) {
+    position: absolute;
+    top: var(--space-16);
+    right: clamp(var(--space-4), 6vw, var(--space-16));
+    z-index: -1;
+  }
+
+  .contact__garden :global(.contact__canvas) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .contact__content {
+    display: grid;
+    gap: var(--space-8);
+    max-width: 34rem;
+  }
+
+  .contact__cmd {
+    color: var(--color-ink-muted);
+  }
+
+  .contact__list {
+    display: grid;
+    gap: var(--space-2);
+    margin: var(--space-3) 0;
+  }
+
+  .contact__link {
+    display: grid;
+    grid-template-columns: 1.5rem 7rem 1fr;
+    padding: var(--space-1) var(--space-2);
+    border-radius: 2px;
+    transition: background var(--duration-fast), color var(--duration-fast);
+  }
+
+  .contact__link:hover {
+    background: rgb(143 196 138 / 0.1);
+  }
+
+  .contact__arrow {
+    color: var(--color-purple);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .contact__link:hover .contact__arrow {
+    transform: translateX(4px);
+  }
+
+  .contact__label {
+    color: var(--color-lavender);
+  }
+
+  .contact__handle {
+    color: var(--color-ink-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (max-width: 480px) {
+    .contact__link {
+      grid-template-columns: 1.5rem 1fr;
+    }
+
+    .contact__handle {
+      grid-column: 2;
+    }
+  }
+</style>

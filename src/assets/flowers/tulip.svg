@@ -1,0 +1,10 @@
+<!-- Tulip cup. See lily.svg for conventions. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -80 80 85">
+  <path data-color="purpleDim" d="M0 -6 C -18 -10 -22 -40 -12 -62 C -6 -52 6 -52 12 -62 C 22 -40 18 -10 0 -6 Z" />
+  <path data-color="purple" d="M-2 -4 C -22 -8 -27 -38 -17 -60 C -8 -46 -3 -30 -2 -4 Z" />
+  <path data-color="purple" d="M2 -4 C 22 -8 27 -38 17 -60 C 8 -46 3 -30 2 -4 Z" />
+  <path data-color="fuchsia" d="M0 -4 C -13 -10 -13 -42 0 -68 C 13 -42 13 -10 0 -4 Z" />
+  <path data-color="lavender" data-stroke="1.6" d="M0 -8 C 0 -26 0 -44 0 -58" />
+  <path data-color="sage" d="M0 0 C -8 -2 -14 -8 -17 -15 C -9 -13 -4 -9 0 -4 Z" />
+  <path data-color="sage" d="M0 0 C 8 -2 14 -8 17 -15 C 9 -13 4 -9 0 -4 Z" />
+</svg>

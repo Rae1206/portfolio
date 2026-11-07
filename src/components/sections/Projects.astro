@@ -1,0 +1,34 @@
+---
+import ProjectCard from '@/components/cards/ProjectCard.astro';
+import Section from '@/components/ui/Section.astro';
+import { asciiArtNames } from '@/data/ascii-art';
+import { projects } from '@/data/portfolio';
+---
+
+<Section id="projects" index="02" command="ls -la ./projects" title="Selected work" kicker="Things I planted and watched grow.">
+  <ul class="projects" role="list">
+    {
+      projects.map((project, index) => (
+        <li>
+          <ProjectCard project={project} index={index} art={asciiArtNames[index % asciiArtNames.length]!} />
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  .projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-8);
+  }
+
+  .projects > li {
+    display: flex;
+  }
+
+  .projects > li > :global(*) {
+    flex: 1;
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+import AsciiMeter from '@/components/ui/AsciiMeter.astro';
+import Frame from '@/components/ui/Frame.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Section from '@/components/ui/Section.astro';
+import { skillGroups } from '@/data/portfolio';
+---
+
+<Section id="skills" index="03" command="tree ./skills" title="Skills & tools" kicker="Roots, stems and the occasional bloom.">
+  <div class="skills">
+    {
+      skillGroups.map((group, index) => (
+        <Frame tone={index % 2 === 0 ? 'sage' : 'lavender'} data-reveal style={`--reveal-delay: ${index * 120}ms`}>
+          <h3 class="skills__group">
+            <Icon name="folder" size={16} />
+            ./{group.name}/
+          </h3>
+          <ul class="skills__list">
+            {group.skills.map((skill, skillIndex) => (
+              <li>
+                <span class="skills__branch" aria-hidden="true">
+                  {skillIndex === group.skills.length - 1 ? '└──' : '├──'}
+                </span>
+                <AsciiMeter label={skill.name} value={skill.level} segments={12} />
+              </li>
+            ))}
+          </ul>
+        </Frame>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+    gap: var(--space-8);
+  }
+
+  .skills__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-lavender);
+  }
+
+  .skills__list {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .skills__list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .skills__branch {
+    color: var(--color-ink-faint);
+    font-size: var(--text-sm);
+  }
+</style>

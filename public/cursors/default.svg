@@ -1,0 +1,9 @@
+<!-- Default cursor: sage crosshair with a lavender dot. Hotspot at 16,16.
+     Colors mirror src/styles/tokens.css (cursor images cannot read CSS variables). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g fill="none" stroke-linecap="square">
+    <path d="M16 6v6M16 20v6M6 16h6M20 16h6" stroke="#080807" stroke-width="4" />
+    <path d="M16 6v6M16 20v6M6 16h6M20 16h6" stroke="#52e062" stroke-width="2" />
+  </g>
+  <circle cx="16" cy="16" r="2.2" fill="#caa6ff" stroke="#080807" stroke-width="1" />
+</svg>

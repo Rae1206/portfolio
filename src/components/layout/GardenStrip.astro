@@ -1,0 +1,28 @@
+---
+import AsciiGarden from '@/components/islands/AsciiGarden';
+
+/** A thin strip of ASCII meadow used between sections. */
+interface Props {
+  seed?: number;
+  height?: string;
+  class?: string;
+}
+
+const { seed, height = '8rem', class: className } = Astro.props;
+---
+
+<div class:list={['strip', className]} style={`--strip-height: ${height}`} aria-hidden="true">
+  <AsciiGarden client:visible preset="strip" seed={seed} fontSize={11} className="strip__canvas" />
+</div>
+
+<style>
+  .strip {
+    height: var(--strip-height);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .strip :global(.strip__canvas) {
+    width: 100%;
+    height: 100%;
+  }
+</style>

@@ -1,0 +1,35 @@
+---
+/** Thin ornamental divider:  ───────◆─────── */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['divider', className]} role="separator">
+  <span class="divider__line"></span>
+  <span class="divider__gem" aria-hidden="true">◆</span>
+  <span class="divider__line"></span>
+</div>
+
+<style>
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-ink-muted);
+  }
+
+  .divider__line {
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  .divider__gem {
+    font-size: 0.6rem;
+    color: var(--color-lavender);
+  }
+</style>

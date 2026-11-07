@@ -1,0 +1,169 @@
+---
+import AsciiArt from '@/components/ui/AsciiArt.astro';
+import Frame from '@/components/ui/Frame.astro';
+import Icon from '@/components/ui/Icon.astro';
+import Tag from '@/components/ui/Tag.astro';
+import type { AsciiArtName } from '@/data/ascii-art';
+import type { Project } from '@/data/portfolio';
+
+interface Props {
+  project: Project;
+  index: number;
+  art: AsciiArtName;
+}
+
+const { project, index, art } = Astro.props;
+const number = String(index + 1).padStart(2, '0');
+const statusLabel = { live: 'live', wip: 'in progress', archived: 'archived' }[project.status];
+---
+
+<Frame
+  as="article"
+  interactive
+  padding="none"
+  class="project"
+  data-reveal
+  style={`--reveal-delay: ${index * 90}ms`}
+>
+  <div class="project__preview">
+    <AsciiArt name={art} class="project__art" />
+    <span class:list={['project__status', `project__status--${project.status}`]}>
+      <span aria-hidden="true">●</span>
+      {statusLabel}
+    </span>
+  </div>
+
+  <div class="project__body">
+    <p class="project__meta">
+      <span class="text-purple">[{number}]</span>
+      <span aria-hidden="true">──</span>
+      <span>{project.year}</span>
+    </p>
+    <h3 class="project__title">{project.title}</h3>
+    <p class="project__summary">{project.summary}</p>
+    <ul class="project__tags" aria-label="Tech stack">
+      {project.stack.map((tech) => <li><Tag>{tech}</Tag></li>)}
+    </ul>
+    <p class="project__links">
+      {
+        project.href && (
+          <a href={project.href} class="project__link">
+            <Icon name="arrow" size={14} /> live demo
+          </a>
+        )
+      }
+      {
+        project.repo && (
+          <a href={project.repo} class="project__link">
+            <Icon name="github" size={14} /> source
+          </a>
+        )
+      }
+    </p>
+  </div>
+</Frame>
+
+<style>
+  .project {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .project__preview {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 11rem;
+    padding: var(--space-4);
+    border-bottom: 1px dashed var(--color-border);
+    background:
+      radial-gradient(circle at 50% 120%, rgb(160 102 221 / 0.16), transparent 60%),
+      repeating-linear-gradient(90deg, rgb(195 174 240 / 0.04) 0 1px, transparent 1px 12px);
+  }
+
+  .project__preview :global(.project__art) {
+    transition: transform var(--duration-slow) var(--ease-out), filter var(--duration-base);
+  }
+
+  .project:hover .project__preview :global(.project__art) {
+    transform: scale(1.08) translateY(-4px);
+    filter: drop-shadow(0 0 10px rgb(160 102 221 / 0.45));
+  }
+
+  .project__status {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    display: inline-flex;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .project__status--live span { color: var(--color-sage); }
+  .project__status--wip span { color: var(--color-amber); }
+  .project__status--archived span { color: var(--color-ink-faint); }
+
+  .project__status--live span {
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .project__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+  }
+
+  .project__meta {
+    display: flex;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  .project__title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+
+  .project__summary {
+    font-size: var(--text-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .project__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .project__links {
+    display: flex;
+    gap: var(--space-6);
+    margin-top: auto;
+    padding-top: var(--space-2);
+    font-size: var(--text-sm);
+  }
+
+  .project__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--color-lavender);
+    border-bottom: 1px dashed transparent;
+    transition: border-color var(--duration-fast), color var(--duration-fast);
+  }
+
+  .project__link:hover {
+    color: var(--color-sage);
+    border-bottom-color: currentColor;
+  }
+
+  @keyframes pulse {
+    50% { opacity: 0.3; }
+  }
+</style>

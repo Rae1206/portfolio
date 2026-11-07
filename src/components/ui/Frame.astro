@@ -1,0 +1,88 @@
+---
+import type { HTMLTag } from 'astro/types';
+
+/**
+ * Dashed retro frame with "+" corner markers. The base surface for cards,
+ * stat groups and panels.
+ */
+interface Props {
+  as?: HTMLTag;
+  tone?: 'lavender' | 'sage';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  interactive?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  as: Tag = 'div',
+  tone = 'lavender',
+  padding = 'md',
+  interactive = false,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<Tag
+  class:list={['frame', `frame--${tone}`, `frame--pad-${padding}`, { 'frame--interactive': interactive }, className]}
+  {...rest}
+>
+  <span class="frame__corner frame__corner--tl" aria-hidden="true">+</span>
+  <span class="frame__corner frame__corner--tr" aria-hidden="true">+</span>
+  <span class="frame__corner frame__corner--bl" aria-hidden="true">+</span>
+  <span class="frame__corner frame__corner--br" aria-hidden="true">+</span>
+  <slot />
+</Tag>
+
+<style>
+  .frame {
+    --frame-color: var(--color-border);
+    --corner-color: var(--color-lavender);
+    position: relative;
+    border: 1px dashed var(--frame-color);
+    border-radius: var(--radius);
+    background: rgb(11 11 9 / 0.55);
+    backdrop-filter: blur(2px);
+    transition:
+      border-color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  .frame--sage {
+    --frame-color: var(--color-border-sage);
+    --corner-color: var(--color-sage);
+  }
+
+  .frame--pad-none { padding: 0; }
+  .frame--pad-sm { padding: var(--space-4); }
+  .frame--pad-md { padding: var(--space-6); }
+  .frame--pad-lg { padding: var(--space-8); }
+
+  .frame__corner {
+    position: absolute;
+    font-size: 0.75rem;
+    line-height: 1;
+    color: var(--corner-color);
+    opacity: 0.8;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .frame__corner--tl { top: -0.4rem; left: -0.3rem; }
+  .frame__corner--tr { top: -0.4rem; right: -0.3rem; }
+  .frame__corner--bl { bottom: -0.45rem; left: -0.3rem; }
+  .frame__corner--br { bottom: -0.45rem; right: -0.3rem; }
+
+  .frame--interactive:hover,
+  .frame--interactive:focus-within {
+    --frame-color: var(--corner-color);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.4), 0 0 32px -8px var(--corner-color);
+    transform: translateY(-3px);
+  }
+
+  .frame--interactive:hover .frame__corner--tl { transform: translate(-3px, -3px) rotate(45deg); }
+  .frame--interactive:hover .frame__corner--tr { transform: translate(3px, -3px) rotate(45deg); }
+  .frame--interactive:hover .frame__corner--bl { transform: translate(-3px, 3px) rotate(45deg); }
+  .frame--interactive:hover .frame__corner--br { transform: translate(3px, 3px) rotate(45deg); }
+</style>

@@ -1,0 +1,8 @@
+<!-- Closed bud. See lily.svg for conventions. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -60 60 64">
+  <path data-color="fuchsia" d="M0 -4 C -11 -10 -11 -32 0 -48 C 11 -32 11 -10 0 -4 Z" />
+  <path data-color="purple" data-stroke="2.2" d="M-2 -10 C -5 -22 -5 -32 -1 -42" />
+  <path data-color="lavender" data-stroke="1.6" d="M2 -12 C 5 -22 5 -32 1 -42" />
+  <path data-color="sage" d="M0 0 C -10 -6 -13 -18 -9 -28 C -6 -18 -3 -9 0 -4 Z" />
+  <path data-color="sage" d="M0 0 C 10 -6 13 -18 9 -28 C 6 -18 3 -9 0 -4 Z" />
+</svg>

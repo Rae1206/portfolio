@@ -1,0 +1,92 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from './icons';
+
+interface Props {
+  href: string;
+  tone?: 'sage' | 'purple';
+  icon?: IconName;
+  /** Renders a terminal prompt glyph instead of an icon. */
+  prompt?: boolean;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, tone = 'sage', icon, prompt = false, external = false, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={['button', `button--${tone}`, className]}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
+  {prompt && <span class="button__prompt" aria-hidden="true">&gt;_</span>}
+  {icon && <Icon name={icon} size={18} />}
+  <span><slot /></span>
+</a>
+
+<style>
+  .button {
+    --tone: var(--color-sage);
+    --glow: var(--color-glow-sage);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-6);
+    border: 1px solid var(--tone);
+    border-radius: var(--radius);
+    color: var(--color-ink);
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    background: transparent;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out),
+      transform var(--duration-fast) var(--ease-out);
+  }
+
+  .button--purple {
+    --tone: var(--color-purple);
+    --glow: var(--color-glow-purple);
+  }
+
+  /* Fill sweeps in from the left like a terminal selection */
+  .button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--tone);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .button:hover {
+    color: var(--color-bg);
+    box-shadow: 0 0 24px var(--glow);
+  }
+
+  .button:hover::before {
+    transform: scaleX(1);
+  }
+
+  .button:active {
+    transform: translateY(1px);
+  }
+
+  .button__prompt,
+  .button :global(.icon) {
+    color: var(--tone);
+    transition: color var(--duration-base) var(--ease-out);
+  }
+
+  .button:hover .button__prompt,
+  .button:hover :global(.icon) {
+    color: var(--color-bg);
+  }
+</style>

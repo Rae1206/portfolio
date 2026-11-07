@@ -1,0 +1,55 @@
+---
+/**
+ * Lets visitors pause or resume all animations (WCAG 2.2.2).
+ * Initial state comes from the inline script in BaseLayout.
+ */
+---
+
+<button type="button" class="motion-toggle" data-motion-toggle aria-pressed="true">
+  <span class="sr-only">Animations</span>
+  <span aria-hidden="true">anim:</span>
+  <span class="motion-toggle__state" data-motion-state>on</span>
+</button>
+
+<script>
+  import { isMotionEnabled, onMotionChange, setMotionEnabled } from '@/lib/motion';
+
+  const button = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+  const state = document.querySelector<HTMLElement>('[data-motion-state]');
+
+  const sync = (enabled: boolean) => {
+    button?.setAttribute('aria-pressed', String(enabled));
+    if (state) state.textContent = enabled ? 'on' : 'off';
+  };
+
+  sync(isMotionEnabled());
+  onMotionChange(sync);
+  button?.addEventListener('click', () => setMotionEnabled(!isMotionEnabled()));
+</script>
+
+<style>
+  .motion-toggle {
+    display: inline-flex;
+    gap: 0.5ch;
+    padding: 0.1rem 0.5rem;
+    border: 1px dashed var(--color-border);
+    border-radius: 2px;
+    background: transparent;
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+    transition: border-color var(--duration-fast), color var(--duration-fast);
+  }
+
+  .motion-toggle:hover {
+    border-color: var(--color-lavender);
+    color: var(--color-ink);
+  }
+
+  .motion-toggle__state {
+    color: var(--color-sage);
+  }
+
+  .motion-toggle[aria-pressed='false'] .motion-toggle__state {
+    color: var(--color-purple);
+  }
+</style>

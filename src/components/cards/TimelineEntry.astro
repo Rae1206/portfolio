@@ -1,0 +1,108 @@
+---
+import type { ExperienceEntry } from '@/data/portfolio';
+
+/** One experience entry styled as a `git log --graph` commit with diff-style highlights. */
+interface Props {
+  entry: ExperienceEntry;
+  isHead?: boolean;
+  index: number;
+}
+
+const { entry, isHead = false, index } = Astro.props;
+---
+
+<li class="commit" data-reveal style={`--reveal-delay: ${index * 120}ms`}>
+  <span class="commit__node" aria-hidden="true">*</span>
+  <div class="commit__body">
+    <p class="commit__line">
+      <span class="commit__hash">{entry.hash}</span>
+      {isHead && <span class="commit__ref">(HEAD -&gt; main)</span>}
+      <span class="commit__period">{entry.period}</span>
+    </p>
+    <h3 class="commit__title">
+      {entry.role} <span class="text-muted">@</span> <span class="text-lavender">{entry.company}</span>
+    </h3>
+    <p class="commit__summary">{entry.summary}</p>
+    <ul class="commit__diff">
+      {entry.highlights.map((highlight) => <li>{highlight}</li>)}
+    </ul>
+  </div>
+</li>
+
+<style>
+  .commit {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    padding-bottom: var(--space-12);
+  }
+
+  /* Graph line connecting commits */
+  .commit::before {
+    content: '';
+    position: absolute;
+    top: 1.6rem;
+    bottom: 0.2rem;
+    left: 0.45rem;
+    border-left: 1px dashed var(--color-sage-dim);
+  }
+
+  .commit:last-child::before {
+    display: none;
+  }
+
+  .commit__node {
+    font-size: var(--text-lg);
+    line-height: 1.2;
+    color: var(--color-purple);
+  }
+
+  .commit__body {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .commit__line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    font-size: var(--text-sm);
+  }
+
+  .commit__hash {
+    color: var(--color-amber);
+  }
+
+  .commit__ref {
+    color: var(--color-sage);
+  }
+
+  .commit__period {
+    color: var(--color-ink-muted);
+  }
+
+  .commit__title {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+
+  .commit__summary {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .commit__diff {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-left: 2px solid var(--color-sage-dim);
+    background: rgb(143 196 138 / 0.05);
+    font-size: var(--text-sm);
+  }
+
+  .commit__diff li::before {
+    content: '+ ';
+    color: var(--color-sage);
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+/**
+ * Section title styled as a shell command followed by an editorial heading.
+ * e.g.  02 ── $ ls ./projects
+ *       Selected work
+ */
+interface Props {
+  index: string;
+  command: string;
+  title: string;
+  /** Short editorial line rendered in serif italics. */
+  kicker?: string;
+  id?: string;
+}
+
+const { index, command, title, kicker, id } = Astro.props;
+---
+
+<header class="heading">
+  <p class="heading__command" data-reveal="clip">
+    <span class="heading__index">{index}</span>
+    <span class="heading__rule" aria-hidden="true">──</span>
+    <span class="heading__prompt" aria-hidden="true">$</span>
+    <span>{command}</span>
+  </p>
+  <h2 class="heading__title" id={id} data-reveal data-scramble>{title}</h2>
+  {kicker && <p class="heading__kicker editorial" data-reveal style="--reveal-delay: 120ms">{kicker}</p>}
+</header>
+
+<style>
+  .heading {
+    display: grid;
+    gap: var(--space-2);
+    margin-bottom: var(--space-12);
+  }
+
+  .heading__command {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-sage);
+  }
+
+  .heading__index {
+    color: var(--color-purple);
+  }
+
+  .heading__rule {
+    color: var(--color-ink-faint);
+  }
+
+  .heading__prompt {
+    color: var(--color-ink-muted);
+  }
+
+  .heading__title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  .heading__kicker {
+    font-size: var(--text-xl);
+    color: var(--color-lavender);
+  }
+</style>

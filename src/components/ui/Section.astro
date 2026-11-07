@@ -1,0 +1,31 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+/**
+ * Page section with an anchor id (used by the nav scrollspy) and a
+ * terminal-style heading.
+ */
+interface Props {
+  id: string;
+  index: string;
+  command: string;
+  title: string;
+  kicker?: string;
+  class?: string;
+}
+
+const { id, index, command, title, kicker, class: className } = Astro.props;
+const headingId = `${id}-title`;
+---
+
+<section id={id} class:list={['section', className]} aria-labelledby={headingId} data-section>
+  <SectionHeading index={index} command={command} title={title} kicker={kicker} id={headingId} />
+  <slot />
+</section>
+
+<style>
+  .section {
+    position: relative;
+    padding: var(--space-24) clamp(var(--space-4), 5vw, var(--space-16));
+  }
+</style>

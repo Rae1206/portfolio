@@ -1,0 +1,70 @@
+/* Design tokens: single source of truth for color, type, spacing and motion. */
+:root {
+  /* Palette: aged black, sage green, lavender, purple (vibrant SDR) */
+  --color-bg: #080807;
+  --color-bg-raised: #11110e;
+  --color-bg-sunken: #040403;
+  --color-ink: #f5f2eb;
+  --color-ink-muted: #b5afa1;
+  --color-ink-faint: #706c62;
+
+  --color-sage: #52e062;
+  --color-sage-bright: #80ff8e;
+  --color-sage-dim: #2b8a36;
+  --color-lavender: #d6b4ff;
+  --color-purple: #b042ff;
+  --color-fuchsia: #ff2aa8;
+  --color-purple-dim: #7b2cbf;
+  --color-amber: #ffbe3d;
+  /* Capri's colors, sampled from the owner's drawing */
+  --color-azure: #35bbf6;
+  --color-magenta: #ff2aa8;
+  --color-violet: #a838ff;
+  --color-neon: #2fe84a;
+
+  --color-border: rgb(214 180 255 / 0.42);
+  --color-border-sage: rgb(82 224 98 / 0.5);
+  --color-glow-purple: rgb(176 66 255 / 0.55);
+  --color-glow-sage: rgb(82 224 98 / 0.5);
+
+  /* Typography */
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', monospace;
+  --font-display: 'Space Mono', var(--font-mono);
+  --font-editorial: 'Instrument Serif', Georgia, serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --text-2xl: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  --text-hero: clamp(2.75rem, 1.2rem + 6vw, 6rem);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+
+  /* Layout */
+  --topbar-height: 2.75rem;
+  --sidebar-width: 12rem;
+  --content-max: 72rem;
+  --radius: 4px;
+
+  /* Lines */
+  --border-thin: 1px solid var(--color-border);
+  --border-dotted: 1px dashed var(--color-border);
+  --border-dotted-sage: 1px dashed var(--color-border-sage);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 160ms;
+  --duration-base: 320ms;
+  --duration-slow: 900ms;
+}

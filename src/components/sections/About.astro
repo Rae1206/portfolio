@@ -1,0 +1,113 @@
+---
+import AsciiArt from '@/components/ui/AsciiArt.astro';
+import RetroWindow from '@/components/ui/RetroWindow.astro';
+import Section from '@/components/ui/Section.astro';
+import { about } from '@/data/portfolio';
+---
+
+<Section id="about" index="01" command="cat ./about.md" title="About me" kicker="A gardener of small, careful systems.">
+  <div class="about">
+    <div class="about__story" data-reveal>
+      <RetroWindow title={`~/${about.file}`}>
+        <div class="about__prose">
+          <p class="about__h"><span class="text-purple"># </span>whoami</p>
+          {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </RetroWindow>
+    </div>
+
+    <aside class="about__side" data-reveal style="--reveal-delay: 150ms">
+      <RetroWindow title="whoami --json" tone="sage">
+        <div class="about__json">
+          <span class="text-muted" aria-hidden="true">{'{'}</span>
+          <dl>
+            {
+              about.facts.map((fact, index) => (
+                <div class="about__row">
+                  <dt class="text-lavender">"{fact.key}"</dt>
+                  <span class="text-muted" aria-hidden="true">:</span>
+                  <dd class="text-sage">
+                    "{fact.value}"{index < about.facts.length - 1 && <span class="text-muted">,</span>}
+                  </dd>
+                </div>
+              ))
+            }
+          </dl>
+          <span class="text-muted" aria-hidden="true">{'}'}</span>
+        </div>
+      </RetroWindow>
+      <AsciiArt name="sprout" class="about__art" />
+    </aside>
+  </div>
+
+  <blockquote class="about__quote" data-reveal>
+    <p class="editorial">“Software, like a garden, grows best with patience, light and one small commit at a time.”</p>
+  </blockquote>
+</Section>
+
+<style>
+  .about {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .about__prose {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-2);
+    color: var(--color-ink-muted);
+    line-height: 1.8;
+  }
+
+  .about__h {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
+
+  .about__side {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: center;
+  }
+
+  .about__side > :first-child {
+    width: 100%;
+  }
+
+  .about__json {
+    font-size: var(--text-sm);
+    line-height: 1.8;
+  }
+
+  .about__json dl {
+    margin: 0;
+    padding-left: 2ch;
+  }
+
+  .about__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1ch;
+  }
+
+  .about__row dd {
+    margin: 0;
+  }
+
+  .about__quote {
+    margin: var(--space-16) auto 0;
+    max-width: 44rem;
+    text-align: center;
+    font-size: var(--text-2xl);
+    line-height: 1.25;
+    color: var(--color-lavender);
+  }
+
+  @media (max-width: 860px) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import type { Stat } from '@/data/site';
+import Frame from './Frame.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  stats: Stat[];
+  class?: string;
+}
+
+const { stats, class: className } = Astro.props;
+---
+
+<Frame as="dl" padding="none" class:list={['stats', className]}>
+  {
+    stats.map((stat) => (
+      <div class="stats__item">
+        <dt class="stats__label">
+          <Icon name={stat.icon} size={30} class="stats__icon" />
+          <span>{stat.label}</span>
+        </dt>
+        <dd class="stats__value">{stat.value}</dd>
+      </div>
+    ))
+  }
+</Frame>
+
+<style>
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    margin: 0;
+  }
+
+  /* Visual order: icon, value, label (markup keeps dt before dd) */
+  .stats__item {
+    display: grid;
+    grid-template-areas: 'icon' 'value' 'label';
+    justify-items: center;
+    gap: var(--space-1);
+    padding: var(--space-6) var(--space-4);
+    text-align: center;
+  }
+
+  .stats__item + .stats__item {
+    border-left: 1px dashed var(--color-border);
+  }
+
+  .stats__label {
+    display: contents;
+  }
+
+  .stats__label :global(.stats__icon) {
+    grid-area: icon;
+    margin-bottom: var(--space-2);
+    color: var(--color-sage);
+  }
+
+  .stats__label span {
+    grid-area: label;
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+
+  .stats__value {
+    grid-area: value;
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-lavender);
+  }
+
+  @media (max-width: 480px) {
+    .stats__item + .stats__item {
+      border-left: 0;
+      border-top: 1px dashed var(--color-border);
+    }
+  }
+</style>

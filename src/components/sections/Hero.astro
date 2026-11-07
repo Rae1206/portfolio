@@ -1,0 +1,167 @@
+---
+import AsciiGarden from '@/components/islands/AsciiGarden';
+import Typewriter from '@/components/islands/Typewriter';
+import Button from '@/components/ui/Button.astro';
+import Moon from '@/components/ui/Moon.astro';
+import RetroWindow from '@/components/ui/RetroWindow.astro';
+import StatGroup from '@/components/ui/StatGroup.astro';
+import { profile, stats } from '@/data/site';
+---
+
+<section id="home" class="hero" aria-labelledby="hero-title" data-section>
+  <div class="hero__layer hero__layer--garden" aria-hidden="true">
+    <AsciiGarden client:load preset="hero" fontSize={12} className="hero__canvas" />
+  </div>
+  <Moon class="hero__moon" />
+
+  <div class="hero__content">
+    <p class="hero__greeting" data-reveal="clip">
+      <span aria-hidden="true">---</span>
+      {profile.greeting}
+      <span aria-hidden="true">-----</span>
+    </p>
+
+    <h1 id="hero-title" class="hero__name" data-weight="name">
+      <span class="hero__first" data-reveal style="--reveal-delay: 100ms">{profile.firstName}</span>
+      <span class="hero__last caret" data-reveal style="--reveal-delay: 250ms">{profile.lastName}</span>
+    </h1>
+
+    <p class="hero__role" data-reveal style="--reveal-delay: 400ms">
+      {profile.role} <span class="hero__amp">&amp;</span> <span class="text-sage">{profile.roleAccent}</span>
+    </p>
+
+    <Typewriter client:load lines={profile.tagline} startDelay={900} className="hero__tagline" />
+
+    <div class="hero__actions" data-reveal style="--reveal-delay: 550ms">
+      <Button href="#projects" prompt>Explore my work</Button>
+      <Button href="#contact" tone="purple" icon="send">Let's connect</Button>
+    </div>
+
+    <div data-reveal style="--reveal-delay: 700ms">
+      <StatGroup stats={stats} class="hero__stats" />
+    </div>
+  </div>
+
+  <div class="hero__quote" data-reveal style="--reveal-delay: 900ms">
+    <RetroWindow>
+      <p class="hero__quote-text">
+        <span class="text-lavender" aria-hidden="true">&gt;</span>
+        <span>
+          {profile.terminalQuote[0]}<br />
+          <span class="caret">{profile.terminalQuote[1]}</span>
+        </span>
+      </p>
+    </RetroWindow>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-content: center;
+    min-height: calc(100dvh - var(--topbar-height) - var(--space-4));
+    padding: var(--space-16) clamp(var(--space-4), 5vw, var(--space-16)) var(--space-12);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .hero__layer {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero :global(.hero__canvas) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero :global(.hero__moon) {
+    position: absolute;
+    top: var(--space-6);
+    right: var(--space-6);
+    z-index: -1;
+  }
+
+  .hero__content {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-6);
+    max-width: 44rem;
+  }
+
+  .hero__greeting {
+    font-size: var(--text-lg);
+    color: var(--color-sage);
+  }
+
+  .hero__greeting span {
+    color: var(--color-sage-dim);
+  }
+
+  .hero__name {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.45em;
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__first {
+    color: var(--color-ink);
+    text-shadow: 0 0 30px rgb(230 224 212 / 0.12);
+  }
+
+  .hero__last {
+    color: var(--color-purple);
+    text-shadow: 0 0 36px var(--color-glow-purple);
+  }
+
+  .hero__role {
+    font-size: var(--text-xl);
+    letter-spacing: 0.02em;
+  }
+
+  .hero__amp {
+    font-family: var(--font-editorial);
+    font-style: italic;
+    color: var(--color-lavender);
+  }
+
+  .hero :global(.hero__tagline) {
+    min-height: 3.2em;
+    max-width: 36rem;
+    color: var(--color-ink-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .hero__actions + div {
+    width: min(100%, 40rem);
+  }
+
+  .hero__quote {
+    width: min(100%, 24rem);
+    margin-top: var(--space-12);
+  }
+
+  .hero__quote-text {
+    display: flex;
+    gap: var(--space-3);
+    color: var(--color-sage);
+  }
+
+  @media (max-width: 760px) {
+    .hero__layer--garden {
+      opacity: 0.45;
+    }
+  }
+</style>

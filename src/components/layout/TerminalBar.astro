@@ -1,0 +1,87 @@
+---
+import LiveClock from '@/components/islands/LiveClock';
+import Icon from '@/components/ui/Icon.astro';
+import MotionToggle from './MotionToggle.astro';
+import { profile } from '@/data/site';
+---
+
+<header class="topbar">
+  <a href="#home" class="topbar__prompt" aria-label="Back to top">
+    <span class="text-sage" aria-hidden="true">&gt;</span>
+    <span class="topbar__handle">{profile.handle}</span><span class="text-muted">:~$</span>
+    <span class="caret" aria-hidden="true"></span>
+  </a>
+  <p class="topbar__meta">
+    <Icon name="sparkle" size={14} class="topbar__spark" />
+    <span>{profile.location}</span>
+    <span class="topbar__sep" aria-hidden="true">|</span>
+    <LiveClock client:idle timeZone={profile.timeZone} />
+    <MotionToggle />
+  </p>
+</header>
+
+<style>
+  .topbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    height: var(--topbar-height);
+    padding-inline: var(--space-6);
+    font-size: var(--text-sm);
+    background: linear-gradient(to bottom, var(--color-bg) 70%, transparent);
+  }
+
+  .topbar::after {
+    content: '';
+    position: absolute;
+    inset: auto var(--space-4) 0;
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  .topbar__prompt {
+    display: inline-flex;
+    gap: var(--space-2);
+  }
+
+  .topbar__handle {
+    color: var(--color-sage);
+  }
+
+  .topbar__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-lavender);
+  }
+
+  .topbar__meta :global(.topbar__spark) {
+    color: var(--color-sage);
+    animation: twinkle 3s ease-in-out infinite;
+  }
+
+  .topbar__sep {
+    color: var(--color-ink-faint);
+  }
+
+  @keyframes twinkle {
+    50% {
+      opacity: 0.35;
+      transform: scale(0.8) rotate(45deg);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .topbar {
+      padding-inline: var(--space-4);
+      font-size: var(--text-xs);
+    }
+
+    .topbar__handle {
+      display: none;
+    }
+  }
+</style>

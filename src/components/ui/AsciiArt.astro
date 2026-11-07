@@ -1,0 +1,27 @@
+---
+import { asciiArt, type AsciiArtName } from '@/data/ascii-art';
+
+/** Renders a static ASCII illustration with a sage-to-lavender gradient. */
+interface Props {
+  name: AsciiArtName;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+---
+
+<pre class:list={['art', className]} aria-hidden="true">{asciiArt[name].replace(/^\n/, '')}</pre>
+
+<style>
+  .art {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.15;
+    background: linear-gradient(160deg, var(--color-lavender), var(--color-purple) 45%, var(--color-sage) 75%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    user-select: none;
+  }
+</style>

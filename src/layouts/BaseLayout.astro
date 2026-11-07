@@ -1,0 +1,111 @@
+---
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/space-mono/700.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@/styles/global.css';
+import CrtOverlay from '@/components/layout/CrtOverlay.astro';
+import Mascot from '@/components/layout/Mascot.astro';
+import Sidebar from '@/components/layout/Sidebar.astro';
+import TerminalBar from '@/components/layout/TerminalBar.astro';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b0b09" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <script is:inline>
+      // Runs before paint: resolve JS support and the motion preference.
+      (() => {
+        const root = document.documentElement;
+        root.classList.remove('no-js');
+        let stored = null;
+        try {
+          stored = localStorage.getItem('motion');
+        } catch {}
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.dataset.motion = stored === 'on' || stored === 'off' ? stored : reduce ? 'off' : 'on';
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <TerminalBar />
+    <div class="shell">
+      <Sidebar />
+      <main id="main" class="shell__main">
+        <slot />
+      </main>
+    </div>
+    <Mascot />
+    <CrtOverlay />
+
+    <script>
+      import { initBreaker } from '@/lib/debris/breaker';
+      import { initReveal } from '@/scripts/reveal';
+      import { initScrollSpy } from '@/scripts/scrollspy';
+
+      initReveal();
+      initScrollSpy();
+      initBreaker();
+    </script>
+  </body>
+</html>
+
+<style>
+  .shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: calc(var(--topbar-height) + var(--space-4)) var(--space-4) 0;
+  }
+
+  .shell__main {
+    min-width: 0;
+    border: 1px dashed var(--color-border);
+    border-bottom: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 200;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-sage);
+    color: var(--color-bg);
+    transform: translateY(-200%);
+  }
+
+  .skip-link:focus {
+    transform: none;
+  }
+
+  @media (max-width: 960px) {
+    .shell {
+      grid-template-columns: 1fr;
+      gap: 0;
+      padding: var(--topbar-height) 0 0;
+    }
+
+    .shell__main {
+      border: 0;
+    }
+  }
+</style>

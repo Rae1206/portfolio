@@ -1,0 +1,207 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--topbar-height) + var(--space-8));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* Custom cursors (static SVGs in /public/cursors), with native fallbacks */
+html {
+  cursor: url('/cursors/default.svg') 16 16, crosshair;
+}
+
+a,
+button,
+[role='button'],
+label,
+summary,
+select {
+  cursor: url('/cursors/pointer.svg') 16 16, pointer;
+}
+
+input,
+textarea,
+[contenteditable='true'] {
+  cursor: text;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+::selection {
+  background: var(--color-purple);
+  color: var(--color-bg);
+}
+
+:focus-visible {
+  outline: 1px dashed var(--color-sage);
+  outline-offset: 3px;
+}
+
+/* Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-purple-dim) transparent;
+}
+
+/* Utilities */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.text-sage {
+  color: var(--color-sage);
+}
+
+.text-purple {
+  color: var(--color-purple);
+}
+
+.text-lavender {
+  color: var(--color-lavender);
+}
+
+.text-muted {
+  color: var(--color-ink-muted);
+}
+
+.editorial {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Blinking block cursor used across headings and prompts */
+.caret::after {
+  content: '_';
+  margin-left: 0.05em;
+  color: var(--color-sage);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.typewriter-caret {
+  margin-left: 0.1em;
+  color: var(--color-ink);
+}
+
+.typewriter-caret.is-idle {
+  animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Scroll reveal: elements start hidden and transform in when visible */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(4px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out),
+    filter var(--duration-slow) var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal='clip'] {
+  transform: none;
+  filter: none;
+  clip-path: inset(0 100% 0 0);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    clip-path 1.2s var(--ease-out);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  clip-path: inset(0 0 0 0);
+}
+
+/* Without JS, content stays visible */
+.no-js [data-reveal] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  clip-path: none;
+}
+
+/* Motion off: OS reduced-motion preference or the visitor's toggle */
+html[data-motion='off'] {
+  scroll-behavior: auto;
+}
+
+html[data-motion='off'] *,
+html[data-motion='off'] *::before,
+html[data-motion='off'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+html[data-motion='off'] [data-reveal] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  clip-path: none;
+}

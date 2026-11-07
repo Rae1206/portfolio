@@ -1,0 +1,27 @@
+---
+import Footer from '@/components/layout/Footer.astro';
+import GardenStrip from '@/components/layout/GardenStrip.astro';
+import About from '@/components/sections/About.astro';
+import Contact from '@/components/sections/Contact.astro';
+import Experience from '@/components/sections/Experience.astro';
+import Hero from '@/components/sections/Hero.astro';
+import Projects from '@/components/sections/Projects.astro';
+import Skills from '@/components/sections/Skills.astro';
+import { profile } from '@/data/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const title = `${profile.firstName} ${profile.lastName} — ${profile.role}`;
+const description = `${profile.firstName} ${profile.lastName}, ${profile.role.toLowerCase()} based in ${profile.location}. ${profile.tagline.join(' ')}`;
+---
+
+<BaseLayout title={title} description={description}>
+  <Hero />
+  <About />
+  <GardenStrip seed={31} />
+  <Projects />
+  <Skills />
+  <GardenStrip seed={47} />
+  <Experience />
+  <Contact />
+  <Footer />
+</BaseLayout>

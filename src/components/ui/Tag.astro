@@ -1,0 +1,34 @@
+---
+interface Props {
+  tone?: 'sage' | 'lavender';
+}
+
+const { tone = 'sage' } = Astro.props;
+---
+
+<span class:list={['tag', `tag--${tone}`]}><slot /></span>
+
+<style>
+  .tag {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+  }
+
+  .tag--sage {
+    color: var(--color-sage);
+  }
+
+  .tag--lavender {
+    color: var(--color-lavender);
+  }
+
+  .tag::before {
+    content: '#';
+    opacity: 0.6;
+    margin-right: 0.15em;
+  }
+</style>

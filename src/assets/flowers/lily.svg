@@ -1,0 +1,37 @@
+<!--
+  Flower head art for the ASCII garden.
+  Conventions: (0,0) is where the stem ends, the bloom grows towards -y.
+  data-color: palette key (sage, sageBright, sageDim, lavender, purple, purpleDim, ink, inkFaint, amber).
+  data-stroke: stroke width instead of fill. Paint order = document order.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60 -100 120 110">
+  <!-- neck joining the stem to the bloom -->
+  <path data-color="sage" data-stroke="4" d="M0 4 C 0 -6 0 -14 0 -22" />
+
+  <!-- back petals: long, curling outwards -->
+  <path data-color="purpleDim" transform="translate(0 -20) rotate(-84) scale(0.85)" d="M0 0 C -11 -16 -13 -40 -2 -56 C 2 -60 8 -60 10 -54 C 6 -54 4 -50 6 -44 C 10 -26 8 -12 0 0 Z" />
+  <path data-color="purpleDim" transform="translate(0 -20) scale(-1 1) rotate(-84) scale(0.85)" d="M0 0 C -11 -16 -13 -40 -2 -56 C 2 -60 8 -60 10 -54 C 6 -54 4 -50 6 -44 C 10 -26 8 -12 0 0 Z" />
+  <path data-color="purple" transform="translate(0 -20) rotate(-56)" d="M0 0 C -11 -16 -13 -40 -2 -56 C 2 -60 8 -60 10 -54 C 6 -54 4 -50 6 -44 C 10 -26 8 -12 0 0 Z" />
+  <path data-color="purple" transform="translate(0 -20) scale(-1 1) rotate(-56)" d="M0 0 C -11 -16 -13 -40 -2 -56 C 2 -60 8 -60 10 -54 C 6 -54 4 -50 6 -44 C 10 -26 8 -12 0 0 Z" />
+
+  <!-- front petals -->
+  <path data-color="lavender" transform="translate(0 -20) rotate(-28)" d="M0 0 C -12 -18 -12 -44 0 -62 C 12 -44 12 -18 0 0 Z" />
+  <path data-color="lavender" transform="translate(0 -20) rotate(28)" d="M0 0 C -12 -18 -12 -44 0 -62 C 12 -44 12 -18 0 0 Z" />
+  <path data-color="fuchsia" transform="translate(0 -20)" d="M0 0 C -11 -18 -11 -46 0 -66 C 11 -46 11 -18 0 0 Z" />
+
+  <!-- veins -->
+  <path data-color="fuchsia" data-stroke="1.8" transform="translate(0 -20) rotate(-28)" d="M0 -4 C -1 -20 -1 -38 0 -52" />
+  <path data-color="fuchsia" data-stroke="1.8" transform="translate(0 -20) rotate(28)" d="M0 -4 C 1 -20 1 -38 0 -52" />
+  <path data-color="lavender" data-stroke="1.8" transform="translate(0 -20)" d="M0 -4 C 0 -22 0 -40 0 -56" />
+
+  <!-- throat -->
+  <ellipse data-color="purple" cx="0" cy="-20" rx="9" ry="6" />
+
+  <!-- stamens -->
+  <path data-color="sageBright" data-stroke="1.6" d="M0 -22 C -4 -40 -12 -54 -18 -64" />
+  <path data-color="sageBright" data-stroke="1.6" d="M0 -22 C 0 -42 0 -58 1 -70" />
+  <path data-color="sageBright" data-stroke="1.6" d="M0 -22 C 4 -40 12 -54 18 -64" />
+  <circle data-color="amber" cx="-18" cy="-65" r="3.4" />
+  <circle data-color="amber" cx="1" cy="-71" r="3.4" />
+  <circle data-color="amber" cx="18" cy="-65" r="3.4" />
+</svg>

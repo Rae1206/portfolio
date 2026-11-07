@@ -1,0 +1,245 @@
+---
+import { mascot, mascotBlink, mascotScript, mascotTalk } from '@/data/mascot';
+
+/**
+ * The wreck mascot card. Hidden until the page is wrecked (see
+ * lib/debris/damage-meter); docked in a corner so the page stays usable.
+ * Behavior lives in lib/mascot.ts.
+ */
+const data = JSON.stringify({ art: mascot, blink: mascotBlink, talk: mascotTalk, script: mascotScript });
+---
+
+<div class="mascot" data-mascot={data} hidden data-unbreakable>
+  <div class="mascot__panel" role="dialog" aria-labelledby="mascot-question" aria-describedby="mascot-message">
+    <figure class="mascot__figure">
+      <pre class="mascot__art" data-mascot-art role="img" aria-label={mascot.label}></pre>
+      <figcaption class="mascot__badge">{mascotScript.name}</figcaption>
+    </figure>
+
+    <div class="mascot__bubble">
+      <p class="mascot__prompt" aria-hidden="true">{mascotScript.name.toLowerCase()}@portfolio:~$ ./fix</p>
+      <p id="mascot-message" class="mascot__message" data-mascot-message aria-live="polite"></p>
+      <p id="mascot-question" class="mascot__question" data-mascot-question hidden>{mascotScript.question}</p>
+      <div class="mascot__choices" data-mascot-choices hidden>
+        <button type="button" class="mascot__button mascot__button--yes" data-mascot-yes>{mascotScript.yes}</button>
+        <button type="button" class="mascot__button mascot__button--no" data-mascot-no>{mascotScript.no}</button>
+      </div>
+      <p class="mascot__quip" data-mascot-quip aria-live="polite"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initMascot } from '@/lib/mascot';
+
+  initMascot();
+</script>
+
+<style>
+  /* Docked bottom-right; only the card itself takes clicks */
+  .mascot {
+    position: fixed;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    z-index: 95;
+    max-width: calc(100vw - var(--space-8));
+  }
+
+  .mascot[hidden] {
+    display: none;
+  }
+
+  .mascot__panel {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border: 1px solid var(--color-purple);
+    border-radius: 6px;
+    background: rgb(9 9 7 / 0.9);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 0 4px rgb(0 0 0 / 0.35), 0 12px 40px -16px var(--color-purple);
+  }
+
+  .mascot__figure {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  /* Name tag under the mascot */
+  .mascot__badge {
+    padding: 0.05rem 0.6rem;
+    border: 1px solid var(--color-sage);
+    border-radius: 999px;
+    background: rgb(143 196 138 / 0.1);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-sage-bright);
+  }
+
+  .mascot__badge::before {
+    content: '✦ ';
+    color: var(--color-lavender);
+  }
+
+  .mascot__art {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: clamp(0.3rem, 0.24rem + 0.18vw, 0.4rem);
+    line-height: 1.15;
+    filter: drop-shadow(0 0 14px rgb(255 42 168 / 0.45));
+  }
+
+  /* Each line prints left to right, top to bottom, like a terminal */
+  .mascot__art :global(.mascot__line) {
+    display: block;
+    white-space: pre;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .mascot.is-drawing .mascot__art :global(.mascot__line) {
+    animation: print-line 260ms steps(12) forwards;
+    animation-delay: calc(var(--i) * 70ms);
+  }
+
+  .mascot.is-leaving .mascot__art :global(.mascot__line) {
+    clip-path: inset(0 0 0 0);
+    animation: erase-line 220ms steps(10) forwards;
+    animation-delay: calc((var(--line-count) - var(--i)) * 50ms);
+  }
+
+  .mascot.is-drawing .mascot__art {
+    animation: glitch 900ms steps(2) 1;
+  }
+
+  .mascot__art :global([data-tone='purple']) { color: var(--color-purple); }
+  .mascot__art :global([data-tone='lavender']) { color: var(--color-lavender); }
+  .mascot__art :global([data-tone='sage']) { color: var(--color-sage); }
+  .mascot__art :global([data-tone='sage-bright']) { color: var(--color-sage-bright); }
+  .mascot__art :global([data-tone='sage-dim']) { color: var(--color-sage-dim); }
+  .mascot__art :global([data-tone='azure']) { color: var(--color-azure); text-shadow: 0 0 8px var(--color-azure); }
+  .mascot__art :global([data-tone='ink']) { color: var(--color-ink); }
+  .mascot__art :global([data-tone='ink-faint']) { color: var(--color-ink-faint); }
+  .mascot__art :global([data-tone='magenta']) { color: var(--color-magenta); text-shadow: 0 0 6px rgb(255 42 168 / 0.55); }
+  .mascot__art :global([data-tone='violet']) { color: var(--color-violet); text-shadow: 0 0 5px rgb(168 56 255 / 0.45); }
+  .mascot__art :global([data-tone='neon']) { color: var(--color-neon); text-shadow: 0 0 6px rgb(47 232 74 / 0.45); }
+
+  .mascot__bubble {
+    display: grid;
+    gap: var(--space-2);
+    min-width: min(100%, 11rem);
+    max-width: 12.5rem;
+    padding: var(--space-1) 0 var(--space-1) var(--space-3);
+    border-left: 1px dashed var(--color-border);
+    animation: fade-in 400ms var(--ease-out) both;
+    animation-delay: 700ms;
+  }
+
+  .mascot.is-leaving .mascot__bubble {
+    animation: fade-out 250ms var(--ease-out) both;
+  }
+
+  .mascot__prompt {
+    font-size: var(--text-xs);
+    color: var(--color-sage-dim);
+  }
+
+  .mascot__message {
+    min-height: 3.2em;
+    font-size: var(--text-xs);
+    line-height: 1.5;
+    color: var(--color-ink);
+  }
+
+  .mascot__question {
+    font-family: var(--font-editorial);
+    font-style: italic;
+    font-size: var(--text-base);
+    color: var(--color-lavender);
+  }
+
+  .mascot__choices {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  /* `display: flex` would otherwise override the hidden attribute */
+  .mascot__choices[hidden] {
+    display: none;
+  }
+
+  .mascot__button {
+    padding: var(--space-1) var(--space-4);
+    border: 1px solid currentColor;
+    border-radius: var(--radius);
+    background: transparent;
+    font-size: var(--text-xs);
+  }
+
+  .mascot__button--yes {
+    color: var(--color-sage);
+  }
+
+  .mascot__button--yes:hover,
+  .mascot__button--yes:focus-visible {
+    background: var(--color-sage);
+    color: var(--color-bg);
+  }
+
+  .mascot__button--no {
+    color: var(--color-purple);
+    background: rgb(9 9 7 / 0.92);
+  }
+
+  /* Once it starts running it lives on the viewport, above everything */
+  .mascot__button--no.is-loose {
+    position: fixed;
+    z-index: 96;
+    transition:
+      left 240ms var(--ease-out),
+      top 240ms var(--ease-out);
+  }
+
+  .mascot__quip {
+    min-height: 1.4em;
+    font-size: var(--text-xs);
+    color: var(--color-ink-muted);
+  }
+
+  @keyframes print-line {
+    to { clip-path: inset(0 0 0 0); }
+  }
+
+  @keyframes erase-line {
+    to { clip-path: inset(0 0 0 100%); }
+  }
+
+  @keyframes glitch {
+    0% { transform: translate(2px, -1px); }
+    25% { transform: translate(-2px, 1px); filter: hue-rotate(40deg); }
+    50% { transform: translate(1px, 0); }
+    75% { transform: translate(-1px, -1px); filter: none; }
+    100% { transform: none; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+
+  @keyframes fade-out {
+    to { opacity: 0; }
+  }
+
+  @media (max-width: 720px) {
+    .mascot__panel {
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+  }
+</style>
+

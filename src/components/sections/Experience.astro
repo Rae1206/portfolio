@@ -1,0 +1,20 @@
+---
+import TimelineEntry from '@/components/cards/TimelineEntry.astro';
+import Section from '@/components/ui/Section.astro';
+import { experience } from '@/data/portfolio';
+---
+
+<Section id="experience" index="04" command="git log --graph --career" title="Experience" kicker="Every season left a ring in the trunk.">
+  <ol class="timeline">
+    {experience.map((entry, index) => <TimelineEntry entry={entry} index={index} isHead={index === 0} />)}
+  </ol>
+</Section>
+
+<style>
+  .timeline {
+    max-width: 48rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

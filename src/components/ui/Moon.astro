@@ -1,0 +1,31 @@
+---
+import AsciiMoon from '@/components/islands/AsciiMoon';
+
+/**
+ * Decorative ASCII moon (Three.js, loaded lazily when visible).
+ * The parent positions it; `size` sets its width (it is always square).
+ */
+interface Props {
+  size?: string;
+  class?: string;
+}
+
+const { size = 'clamp(7rem, 13vw, 12rem)', class: className } = Astro.props;
+---
+
+<div class:list={['moon', className]} style={`--moon-size: ${size}`} aria-hidden="true">
+  <AsciiMoon client:visible fontSize={7} className="moon__canvas" />
+</div>
+
+<style>
+  .moon {
+    width: var(--moon-size);
+    aspect-ratio: 1;
+  }
+
+  .moon :global(.moon__canvas) {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 14px rgb(176 66 255 / 0.42)) drop-shadow(0 0 28px rgb(255 42 168 / 0.22));
+  }
+</style>

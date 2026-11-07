@@ -1,0 +1,102 @@
+---
+import type { ColoredArt } from '@/lib/colored-art';
+
+/**
+ * Morphs one colored ASCII art into another: the glyphs of `from` fly into
+ * place and become `to`. Hovering morphs it back to `from`, leaving returns
+ * it to `to`. Once settled, the final art sways
+ * and its flowers breathe.
+ */
+interface Props {
+  from: ColoredArt;
+  to: ColoredArt;
+  /** Accessible name of the art. */
+  label: string;
+  class?: string;
+}
+
+const { from, to, label, class: className } = Astro.props;
+---
+
+<ascii-morph
+  class:list={['ascii-morph', className]}
+  data-from={JSON.stringify(from)}
+  data-to={JSON.stringify(to)}
+  role="img"
+  aria-label={label}
+  data-unbreakable
+>
+  <span class="ascii-morph__stage" data-stage aria-hidden="true"></span>
+</ascii-morph>
+
+<script>
+  import { AsciiMorphElement } from '@/lib/ascii-morph';
+
+  if (!customElements.get('ascii-morph')) customElements.define('ascii-morph', AsciiMorphElement);
+</script>
+
+<style>
+  .ascii-morph {
+    display: inline-block;
+    border-radius: var(--radius);
+  }
+
+  .ascii-morph__stage {
+    --lh: 1.15em;
+    position: relative;
+    display: block;
+    width: calc(var(--cols, 1) * 1ch);
+    height: calc(var(--rows, 1) * var(--lh));
+    font-family: var(--font-mono);
+    font-size: var(--ascii-size, 0.5rem);
+    line-height: var(--lh);
+    transform-origin: 50% 100%;
+  }
+
+  .ascii-morph :global(.morph-glyph) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--color-ink-muted);
+    white-space: pre;
+    transform: translate(calc(var(--x) * 1ch), calc(var(--y) * var(--lh)));
+    transition:
+      transform 1000ms cubic-bezier(0.65, 0, 0.35, 1),
+      opacity 700ms ease,
+      color 400ms ease;
+  }
+
+  .ascii-morph.is-instant :global(.morph-glyph) {
+    transition: none;
+  }
+
+  .ascii-morph :global([data-tone='purple']) { color: var(--color-purple); }
+  .ascii-morph :global([data-tone='lavender']) { color: var(--color-lavender); }
+  .ascii-morph :global([data-tone='sage']) { color: var(--color-sage); }
+  .ascii-morph :global([data-tone='sage-bright']) { color: var(--color-sage-bright); }
+  .ascii-morph :global([data-tone='sage-dim']) { color: var(--color-sage-dim); }
+  .ascii-morph :global([data-tone='amber']) { color: var(--color-amber); }
+
+  /* Idle life once settled */
+  .ascii-morph.is-settled .ascii-morph__stage {
+    animation: sway 6s ease-in-out infinite;
+  }
+
+  .ascii-morph.is-settled :global([data-tone='purple']) {
+    animation: bloom 3.5s ease-in-out infinite;
+  }
+
+  .ascii-morph:hover .ascii-morph__stage {
+    filter: drop-shadow(0 0 6px var(--color-glow-purple));
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+
+  @keyframes bloom {
+    0%, 100% { opacity: 0.8; text-shadow: none; }
+    50% { opacity: 1; text-shadow: 0 0 6px var(--color-glow-purple); }
+  }
+</style>
